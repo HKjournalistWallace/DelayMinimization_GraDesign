@@ -44,7 +44,10 @@ def Get_Edge(Structure_select):
         for i1 in range(Params.J):
             for i2 in range(Params.J):
                 if (i1 == 0) and (i2 > i1):
-                    e[i1][i2] = 1
+                    if i2 == Params.J-1:
+                        e[i1][i2]=0
+                    else:
+                        e[i1][i2] = 1
                 elif (i2 == Params.J - 1) and (i2 > i1):
                     e[i1][i2] = 1
 
@@ -83,6 +86,10 @@ def Get_Rlk():
     return R
 
 E   = Get_Edge(Params.DAG_structure)
+
+for i in range(Params.J):
+    print(f'{E[i]}\n')
+
 Rlk = Get_Rlk()
 
 # Define variables
@@ -93,7 +100,7 @@ z  = model.addVars(Params.J, lb=0, vtype = GRB.INTEGER)
 model.update()
 
 # time slots
-t=[ ti for ti in range(Params.slots)]
+t=[ _ for _ in range(Params.slots)]
 
 # a & tj
 model.addConstrs(a[j,k]==gp.quicksum(x[j,k,i] for i in range(Params.slots)) for j in range(Params.J) for k in range(Params.K+1))
@@ -121,11 +128,17 @@ model.addConstr(a[0, 0]==1)
 model.addConstr(a[Params.J-1, 0]==1)
 
 # !To be finished Add constraint ...<n_k
+# # tcmin = math.ceil(((Params.c_j)/(Params.f_k))/Params.time_window)
+# for k in range(Params.K+1):
+#     for t in range(Params.slots):
+#         # model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<=Params.nk)
+#         model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<= 1)
 # tcmin = math.ceil(((Params.c_j)/(Params.f_k))/Params.time_window)
 for k in range(Params.K+1):
-    for t in range(Params.slots):
+    for ts in range(Params.slots-1):
         # model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<=Params.nk)
-        model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<= 1)
+        # tbar = math.ceil(ts + t_jc[j])
+        model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+2) for j in range(Params.J))<= Params.nk)
 
 
 
