@@ -127,17 +127,9 @@ for j in range(Params.J):
 model.addConstr(a[0, 0]==1)
 model.addConstr(a[Params.J-1, 0]==1)
 
-# !To be finished Add constraint ...<n_k
-# # tcmin = math.ceil(((Params.c_j)/(Params.f_k))/Params.time_window)
-# for k in range(Params.K+1):
-#     for t in range(Params.slots):
-#         # model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<=Params.nk)
-#         model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<= 1)
-# tcmin = math.ceil(((Params.c_j)/(Params.f_k))/Params.time_window)
+# Add constraint ...<n_k
 for k in range(Params.K+1):
     for ts in range(Params.slots-1):
-        # model.addConstr(gp.quicksum(x[j,k,t] for j in range(Params.J))<=Params.nk)
-        # tbar = math.ceil(ts + t_jc[j])
         model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+2) for j in range(Params.J))<= Params.nk)
 
 
