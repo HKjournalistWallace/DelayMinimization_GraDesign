@@ -100,10 +100,10 @@ z  = model.addVars(Params.J, lb=0, vtype = GRB.INTEGER)
 model.update()
 
 # time slots
-t=[ _ for _ in range(Params.slots)]
+t = [ _ for _ in range(Params.slots)]
 
 # a & tj
-model.addConstrs(a[j,k]==gp.quicksum(x[j,k,i] for i in range(Params.slots)) for j in range(Params.J) for k in range(Params.K+1))
+model.addConstrs(a[j,k]==gp.quicksum(x[j,k,_] for _ in range(Params.slots)) for j in range(Params.J) for k in range(Params.K+1))
 model.addConstrs(tj[j]==gp.quicksum(t[i]*x[j,k,i] for k in range(Params.K+1) for i in range(Params.slots)) for j in range(Params.J))
 
 # Add constraint T_j = max_{i<j}...
@@ -117,11 +117,11 @@ for i1 in range(Params.J):
     t_jc[i1] = gp.quicksum(a[i1,k]*math.ceil((Params.c_j/Params.f_k)/Params.time_window) for k in range(Params.K+1))
 
 # Add constraint T_j+t_j^c<=t_j
-model.addConstrs(z[j]+t_jc[j]<=tj[j] for j in range(Params.J))
+model.addConstrs(z[j]+t_jc[j] <= tj[j] for j in range(Params.J))
 
 # Add constraint sum_k a_{jk} = 1
 for j in range(Params.J):
-    model.addConstr(gp.quicksum(a[j,k] for k in range(Params.K+1))==1)
+    model.addConstr(gp.quicksum(a[j,k] for k in range(Params.K+1)) == 1)
 
 # a_00=a_J1=1
 model.addConstr(a[0, 0]==1)
@@ -138,3 +138,18 @@ model.setObjective(tj[Params.J-1], GRB.MINIMIZE)
 
 model.optimize()
 
+print('--------------------------Var Values---------------------------')
+if model.Status==GRB.OPTIMAL:
+    print('# Values of a_jk(assignment matrix) #')
+    for j in range(Params.J):
+        ltemp = []
+        for k in range(Params.K+1):
+            ltemp.append(a[j,k].X)
+        print(ltemp)
+    print('# Values of tj(completion time of tasks) #')
+    for _ in range(Params.J):
+        print(tj[_].X)
+    print('# Values of T_j(Ready time of tasks) #')
+    for _ in range(Params.J):
+        print(z[_].X)
+    
