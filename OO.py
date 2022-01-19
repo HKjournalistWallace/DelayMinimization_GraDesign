@@ -20,8 +20,8 @@ class Params:
     K             = 9                       # num of servers
     f_k           = 3.2*(10**9)             # CPU frequency
     slots         = 500                     # time slots
-    # DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
-    DAG_structure = 'Parallel'              # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    # DAG_structure = 'Parallel'              # DAG Structure, 'Serial', 'Parallel' or 'General' 
     # DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
     time_window   = 1*10**(-3)              # time window 1ms
 
@@ -130,8 +130,8 @@ model.addConstr(a[Params.J-1, 0]==1)
 
 # Add constraint ...<n_k
 for k in range(Params.K+1):
-    for ts in range(Params.slots-1):
-        model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+2) for j in range(Params.J))<= Params.nk)
+    for ts in range(Params.slots-math.ceil((Params.c_j/Params.f_k)/Params.time_window)):
+        model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+math.ceil((Params.c_j/Params.f_k)/Params.time_window)) for j in range(Params.J))<= Params.nk)
 
 
 
@@ -153,4 +153,12 @@ if model.Status==GRB.OPTIMAL:
     print('# Values of T_j(Ready time of tasks) #')
     for _ in range(Params.J):
         print(z[_].X)
-    
+    # print('# n_k in time slot check #')
+    # for j in range(Params.J):
+    #     print(f'----------- Task{j} -----------')
+    #     for k in range(Params.K+1):
+    #         print(f'----------- Task{j} on Server{k} -----------')
+    #         for t in range(Params.slots):
+    #             # print(x[j,k,t].X)
+    #             if x[j,k,t].X == 1:
+    #                 print(f'{t}')
