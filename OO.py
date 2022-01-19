@@ -11,12 +11,12 @@ class Params:
     R_wired       = 100*(10**6)             # wired transmit rate, 100mbps
     nk            = 1                       # available VMs for server k
     kappa         = 10**(-11)               # constant kappa
-    J             = 6                       # num of tasks
     d_j           = 10*(10**(6))            # result data size
     c_j           = 100*(10**(6))           # required workload
     Pathloss      = 57                      # Path loss 57 dB
     sigma2        = -174                    # noise power density -174dBm/Hz
     # Parameter Control
+    J             = 10                       # num of tasks
     K             = 9                       # num of servers
     f_k           = 3.2*(10**9)             # CPU frequency
     slots         = 500                     # time slots
@@ -85,8 +85,9 @@ def Get_Rlk():
                     R[i1][i2] = Params.R_wired
     return R
 
-E   = Get_Edge(Params.DAG_structure)
+E = Get_Edge(Params.DAG_structure)
 
+print('--------------------------Edge Matrix---------------------------')
 for i in range(Params.J):
     print(f'{E[i]}\n')
 
@@ -96,7 +97,7 @@ Rlk = Get_Rlk()
 x  = model.addVars(Params.J, Params.K+1, Params.slots, vtype = GRB.BINARY)
 a  = model.addVars(Params.J, Params.K+1, vtype = GRB.BINARY)
 tj = model.addVars(Params.J, lb=0, ub=Params.slots, vtype = GRB.INTEGER)
-z  = model.addVars(Params.J, lb=0, vtype = GRB.INTEGER)
+z  = model.addVars(Params.J, lb=0, vtype = GRB.INTEGER) #T_j
 model.update()
 
 # time slots
@@ -140,13 +141,13 @@ model.optimize()
 
 print('--------------------------Var Values---------------------------')
 if model.Status==GRB.OPTIMAL:
-    print('# Values of a_jk(assignment matrix) #')
+    print('# Values of a_jk(Assignment matrix) #')
     for j in range(Params.J):
         ltemp = []
         for k in range(Params.K+1):
             ltemp.append(a[j,k].X)
         print(ltemp)
-    print('# Values of tj(completion time of tasks) #')
+    print('# Values of tj(Completion time of tasks) #')
     for _ in range(Params.J):
         print(tj[_].X)
     print('# Values of T_j(Ready time of tasks) #')
