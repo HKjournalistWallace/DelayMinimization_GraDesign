@@ -107,6 +107,7 @@ t = [ _ for _ in range(Params.slots)]
 model.addConstrs(a[j,k]==gp.quicksum(x[j,k,_] for _ in range(Params.slots)) for j in range(Params.J) for k in range(Params.K+1))
 model.addConstrs(tj[j]==gp.quicksum(t[i]*x[j,k,i] for k in range(Params.K+1) for i in range(Params.slots)) for j in range(Params.J))
 
+## Add Constraints
 # Add constraint T_j = max_{i<j}...
 for j1 in range(Params.J):
     for i1 in range(j1):
@@ -129,9 +130,11 @@ model.addConstr(a[0, 0]==1)
 model.addConstr(a[Params.J-1, 0]==1)
 
 # Add constraint ...<n_k
+Compute_slots = math.ceil((Params.c_j/Params.f_k)/Params.time_window)
+
 for k in range(Params.K+1):
-    for ts in range(Params.slots-math.ceil((Params.c_j/Params.f_k)/Params.time_window)):
-        model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+math.ceil((Params.c_j/Params.f_k)/Params.time_window)) for j in range(Params.J))<= Params.nk)
+    for ts in range(Params.slots-Compute_slots+1):
+        model.addConstr(gp.quicksum(x[j,k,t] for t in range(ts, ts+Compute_slots-1) for j in range(Params.J))<= Params.nk)
 
 
 
