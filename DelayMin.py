@@ -1,6 +1,7 @@
 import gurobipy as gp
 from gurobipy import GRB
 import math
+import pandas as pd
 
 ## Basic Parameters
 class Params:
@@ -17,12 +18,12 @@ class Params:
     sigma2        = -174                    # noise power density -174dBm/Hz
     # Parameter Control
     J             = 10                       # num of tasks
-    K             = 9                       # num of servers
+    K             = 1                       # num of servers
     f_k           = 3.2*(10**9)             # CPU frequency
     slots         = 500                     # time slots
-    DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    # DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
     # DAG_structure = 'Parallel'              # DAG Structure, 'Serial', 'Parallel' or 'General' 
-    # DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
     time_window   = 1*10**(-3)              # time window 1ms
 
 
@@ -148,11 +149,16 @@ if __name__ == '__main__' :
     print('--------------------------Var Values---------------------------')
     if model.Status==GRB.OPTIMAL:
         print('# Values of a_jk(Assignment matrix) #')
+        mtemp = []
         for j in range(Params.J):
             ltemp = []
             for k in range(Params.K+1):
                 ltemp.append(a[j,k].X)
             print(ltemp)
+            mtemp.append(ltemp)
+        # # Write to csv file
+        # df_A = pd.DataFrame(mtemp)
+        # df_A.to_csv(f"A_matrix_J_{Params.J}_K_{Params.K}_{Params.DAG_structure}.csv")
         print('# Values of tj(Completion time of tasks) #')
         ltemp = []
         for _ in range(Params.J):
@@ -172,5 +178,7 @@ if __name__ == '__main__' :
         #             # print(x[j,k,t].X)
         #             if x[j,k,t].X == 1:
         #                 print(f'{t}')
+
+
     else:
         print('Model Optimization Error!')
