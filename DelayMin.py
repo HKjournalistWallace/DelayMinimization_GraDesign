@@ -83,11 +83,11 @@ def Get_Rlk():
                     R[i1][i2] = Params.R_wired
     return R
 
-E = Get_Edge(Params.DAG_structure)
-
-Rlk = Get_Rlk()
 
 if __name__ == '__main__' :
+    E = Get_Edge(Params.DAG_structure)
+
+    Rlk = Get_Rlk()
     ## Model
     model = gp.Model("OptimalOffloading")
 
