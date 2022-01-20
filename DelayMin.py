@@ -69,10 +69,10 @@ def Get_Edge(Structure_select):
     return e
 
 # Compute R_{lk}
-def Get_Rlk():
-    R = [[0 for _ in range(Params.K + 1)]for _ in range(Params.K + 1)]
-    for i1 in range(Params.K + 1):
-        for i2 in range(Params.K + 1):
+def Get_Rlk(num_servers = Params.K + 1):
+    R = [[0 for _ in range(num_servers)]for _ in range(num_servers)]
+    for i1 in range(num_servers):
+        for i2 in range(num_servers):
             if i1 == i2:
                 R[i1][i2] = float('inf')
             else:
