@@ -17,13 +17,13 @@ class Params:
     Pathloss      = 57                      # Path loss 57 dB
     sigma2        = -174                    # noise power density -174dBm/Hz
     # Parameter Control
-    J             = 10                       # num of tasks
-    K             = 1                       # num of servers
+    J             = 6                       # num of tasks
+    K             = 9                       # num of servers
     f_k           = 3.2*(10**9)             # CPU frequency
     slots         = 500                     # time slots
-    # DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
     # DAG_structure = 'Parallel'              # DAG Structure, 'Serial', 'Parallel' or 'General' 
-    DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    # DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
     time_window   = 1*10**(-3)              # time window 1ms
 
 
@@ -51,21 +51,31 @@ def Get_Edge(Structure_select):
                     e[i1][i2] = 1
 
     elif Structure_select == 'General':
-        for i1 in range(Params.J):
-            for i2 in range(Params.J):
-                if i2 > i1:
-                    if i1 == 0 and i2 <= 2:
-                        e[i1][i2]=1
-                    elif i1 == 1 and 3<=i2<=4:
-                        e[i1][i2]=1
-                    elif i1 == 2 and 5<=i2<=6:
-                        e[i1][i2]=1
-                    elif i2 == 7 and 3<=i1<=4:
-                        e[i1][i2]=1
-                    elif i2 == 8 and 5<=i1<=6:
-                        e[i1][i2]=1
-                    elif i2 == 9 and 7<=i1<=8:
-                        e[i1][i2]=1
+        if Params.J == 10:
+            for i1 in range(Params.J):
+                for i2 in range(Params.J):
+                    if i2 > i1:
+                        if i1 == 0 and i2 <= 2:
+                            e[i1][i2]=1
+                        elif i1 == 1 and 3<=i2<=4:
+                            e[i1][i2]=1
+                        elif i1 == 2 and 5<=i2<=6:
+                            e[i1][i2]=1
+                        elif i2 == 7 and 3<=i1<=4:
+                            e[i1][i2]=1
+                        elif i2 == 8 and 5<=i1<=6:
+                            e[i1][i2]=1
+                        elif i2 == 9 and 7<=i1<=8:
+                            e[i1][i2]=1
+        elif Params.J == 6:
+            e[0][1]=1
+            e[0][2]=1
+            e[1][3]=1
+            e[1][4]=1
+            e[2][5]=1
+            e[3][5]=1
+            e[4][5]=1
+            
     return e
 
 # Compute R_{lk}
@@ -159,15 +169,15 @@ if __name__ == '__main__' :
         # # Write to csv file
         # df_A = pd.DataFrame(mtemp)
         # df_A.to_csv(f"A_matrix_J_{Params.J}_K_{Params.K}_{Params.DAG_structure}.csv")
+        print('# Values of T_j(Ready time of tasks) #')
+        ltemp = []
+        for _ in range(Params.J):
+            ltemp.append(z[_].X)
+        print(ltemp)
         print('# Values of tj(Completion time of tasks) #')
         ltemp = []
         for _ in range(Params.J):
             ltemp.append(tj[_].X)
-        print(ltemp)
-        ltemp = []
-        print('# Values of T_j(Ready time of tasks) #')
-        for _ in range(Params.J):
-            ltemp.append(z[_].X)
         print(ltemp)
         # print('# n_k in time slot check #')
         # for j in range(Params.J):
@@ -178,7 +188,8 @@ if __name__ == '__main__' :
         #             # print(x[j,k,t].X)
         #             if x[j,k,t].X == 1:
         #                 print(f'{t}')
-
-
+        with open('./DelayData.txt','a+') as f:
+            f.write(f'J_{Params.J}K_{Params.K}_{Params.DAG_structure}, {(tj[Params.J-1].X*Params.time_window)/(10**(-3))}\n') # in ms
+        f.close()
     else:
         print('Model Optimization Error!')
