@@ -17,7 +17,7 @@ class Params:
     Pathloss      = 57                      # Path loss 57 dB
     sigma2        = -174                    # noise power density -174dBm/Hz
     # Parameter Control
-    J             = 6                       # num of tasks
+    J             = 10                       # num of tasks
     K             = 9                       # num of servers
     f_k           = 3.2*(10**9)             # CPU frequency
     slots         = 500                     # time slots
