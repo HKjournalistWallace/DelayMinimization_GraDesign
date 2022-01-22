@@ -25,7 +25,7 @@ for K_i in K:
     for k_i in range(K_i+1):
         Energytemp1 = gp.quicksum(A[j][k_i]*Params.kappa*(10**(-3))*(Params.c_j/(10**3))*((Params.f_k/(10**6))**2) for j in range(J))
         Energytemp2 = gp.quicksum(A[j][k_i]*gp.quicksum(E[j][i]*Params.d_j*A[i][l]*(10**(Params.Pk/10)/1000)/R[k_i][l] for l in range(K_i+1) for i in range(j+1,J)) for j in range(J))
-        Energy_K[k_i] = Energytemp1.getConstant() + (10**(-1))*Energytemp2.getConstant() # in Watts
+        Energy_K[k_i] = Energytemp1.getConstant() + (10**(-1))*Energytemp2.getConstant() # ! in Joule?
     # print(sum(Energy_K))
     with open('./EnergyData.txt','a+') as f:
         f.write(f'J={J}K={K_i}_{Struc}, {sum(Energy_K)}\n')
