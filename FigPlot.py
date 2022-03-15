@@ -1,6 +1,7 @@
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-import numpy as np
+
 ## Delay Plotting
 K_axis = range(1,10)
 J10S = [320 for _ in K_axis]
@@ -44,7 +45,7 @@ ax1.set_ylabel("$E^{max}$ [mJ]")
 ax1.set_ylim(0, 250)
 ax1.set_xticks(range(1,10))
 ax1.bar(K_axis-0.25, Serl, color = 'xkcd:gold', width = 0.25, label='Serial DAG')
-ax1.bar(K_axis, Prl, color = 'xkcd:dull blue', width = 0.25, label ='Parrel DAG')   # https://xkcd.com/color/rgb/
+ax1.bar(K_axis, Prl, color = 'xkcd:dull blue', width = 0.25, label ='Parallel DAG')   # https://xkcd.com/color/rgb/
 ax1.bar(K_axis+0.25, Gnrl, color = 'r', width = 0.25, label = 'General DAG')
 ax1.legend()
 plt.show()

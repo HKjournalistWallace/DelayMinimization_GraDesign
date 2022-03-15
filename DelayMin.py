@@ -18,12 +18,12 @@ class Params:
     sigma2        = -174                    # noise power density -174dBm/Hz
     # Parameter Control
     J             = 10                       # num of tasks
-    K             = 9                       # num of servers
-    f_k           = 3.2*(10**9)             # CPU frequency
+    K             = 4                       # num of servers
+    f_k           = 3.6*(10**9)             # CPU frequency 1.5,1.8,2.1,2.4,2.7,3,3.3,3.6
     slots         = 500                     # time slots
-    DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    # DAG_structure = 'General'               # DAG Structure, 'Serial', 'Parallel' or 'General' 
     # DAG_structure = 'Parallel'              # DAG Structure, 'Serial', 'Parallel' or 'General' 
-    # DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
+    DAG_structure = 'Serial'                # DAG Structure, 'Serial', 'Parallel' or 'General' 
     time_window   = 1*10**(-3)              # time window 1ms
 
 
@@ -189,7 +189,7 @@ if __name__ == '__main__' :
         #             if x[j,k,t].X == 1:
         #                 print(f'{t}')
         with open('./DelayData.txt','a+') as f:
-            f.write(f'J_{Params.J}K_{Params.K}_{Params.DAG_structure}, {(tj[Params.J-1].X*Params.time_window)/(10**(-3))}\n') # in ms
+            f.write(f'J_{Params.J}K_{Params.K}_{Params.DAG_structure}_CPU{Params.f_k/(10**9)}GHz, {(tj[Params.J-1].X*Params.time_window)/(10**(-3))}\n') # in ms
         f.close()
     else:
         print('Model Optimization Error!')
